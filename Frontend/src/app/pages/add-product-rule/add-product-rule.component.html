@@ -1,0 +1,544 @@
+<app-sidebar></app-sidebar>
+<form class="was-validated" #myForm="ngForm" novalidate>
+  <div class="bg-light pb-3 pt-3">
+    <div class="container bg-white py-2 my-3">
+      <div class="row py-2 mx-auto">
+        <div class="col-md-9">
+          <div class="form-group mb-3">
+            <label class="form-label fs-4"
+              >Product</label
+            >
+            <input
+              autocomplete="on"
+              (focusout)="onFocusOutEvent($event.target)"
+              type="text"
+              class="form-control"
+              id="formGroupExampleInput"
+              placeholder="Enter title"
+              name="titleInput"
+              [(ngModel)]="productName"
+              required
+            />
+            <div class="invalid-feedback">Please fill out this field.</div>
+            <div *ngIf="result" class="text-danger">
+              This product already exist.
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3" style="margin-top: 43px">
+          <button
+            class="btn btn-dark btn-block"
+            type="button"
+            [disabled]="!productName"
+            (click)="addContainer()"
+          >
+            Add paperStock Rule
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="container bg-white my-3 py-2">
+      <h4 class="text-decoration-underline">Size</h4>
+      <div class="row justify-content-evenly mx-auto">
+        <div class="col">
+          <label class="add-order-label m-0">Category</label>
+          <p-dropdown
+            styleClass="w-100"
+            [options]="categoryArray?.productFieldValuesList"
+            optionLabel="name"
+            name="category"
+            (onChange)="onCategoryChange($event.value)"
+            [(ngModel)]="category"
+            [required]="true"
+            placeholder="Select category"
+          ></p-dropdown>
+          <div *ngIf="category" class="text-success ps-2">{{ valid }}</div>
+          <div *ngIf="!category" class="text-danger ps-2">{{ invalid }}</div>
+        </div>
+
+        <div class="col" *ngIf="category">
+          <label class="add-order-label m-0">Paper Size</label>
+          <p-multiSelect
+            styleClass="w-100"
+            [options]="uppingArray"
+            optionLabel="label"
+            display="chip"
+            [required]="true"
+            (onChange)="onUpingChange($event.value)"
+            name="paperSize"
+            [(ngModel)]="upping"
+            placeholder="Select Upping"
+          ></p-multiSelect>
+          <div *ngIf="upping" class="text-success ps-2">{{ valid }}</div>
+          <div *ngIf="!upping" class="text-danger ps-2">{{ invalid }}</div>
+        </div>
+      </div>
+    </div>
+
+    <div
+      class="container bg-white py-2 my-3"
+      *ngFor="let container of containers; let i = index"
+    >
+      <h3 class="text-center text-decoration-underline">
+        PaperStock Rule {{ i + 1 }}
+      </h3>
+      <div class="d-flex justify-content-end">
+        <button
+          type="button"
+          class="btn btn-dark"
+          *ngIf="i > 0"
+          (click)="deleteContainer(i)"
+        >
+          <i class="fa-solid fa-trash text-danger"></i>
+        </button>
+      </div>
+      <div class="row py-1 mx-3">
+        <input
+          class="rounded py-2"
+          type="text"
+          [name]="'userFriendlyName[' + i + ']'"
+          required
+          [(ngModel)]="containers[i].userFriendlyName"
+          placeholder="Enter a User Friendly Name"
+        />
+      </div>
+      <div class="row py-1 mx-auto">
+        <div class="col">
+          <label class="add-order-label m-0">PaperStock</label>
+          <p-dropdown
+            styleClass="w-100"
+            [options]="container.allPaper"
+            optionLabel="name"
+            [name]="'paperStock[' + i + ']'"
+            [required]="true"
+            [(ngModel)]="containers[i].paper"
+            placeholder="Select Paper"
+            (ngModelChange)="changePaper(i, $event)"
+          >
+            <ng-template let-option pTemplate="item">
+              <div (click)="changePaper(i, option)">
+                {{ option.name }}
+              </div>
+            </ng-template>
+          </p-dropdown>
+          <div *ngIf="containers[i].paper" class="text-success ps-2">
+            {{ valid }}
+          </div>
+          <div *ngIf="!containers[i].paper" class="text-danger ps-2">
+            {{ invalid }}
+          </div>
+        </div>
+        <div class="col" *ngIf="containers[i].paper">
+          <label class="add-order-label m-0">Brand</label>
+          <p-dropdown
+            styleClass="w-100"
+            [options]="container.allBrand"
+            [name]="'brandContainer[' + i + ']'"
+            optionLabel="name"
+            [required]="true"
+            [(ngModel)]="containers[i].brand"
+            placeholder="Select brand"
+            (ngModelChange)="changeBrand(i, $event)"
+          >
+            <ng-template let-option pTemplate="item">
+              <div (click)="changeBrand(i, option)">
+                {{ option.name }}
+              </div>
+            </ng-template>
+          </p-dropdown>
+          <div *ngIf="containers[i].brand" class="text-success ps-2">
+            {{ valid }}
+          </div>
+          <div *ngIf="!containers[i].brand" class="text-danger ps-2">
+            {{ invalid }}
+          </div>
+        </div>
+      </div>
+      <div class="row py-1 mx-auto">
+        <div class="col" *ngIf="containers[i].brand && containers[i].paper">
+          <label class="add-order-label m-0">MadeIn</label>
+          <p-dropdown
+            styleClass="w-100"
+            [options]="containers[i].allMadeIn"
+            optionLabel="name"
+            [required]="true"
+            [name]="'madeIn[' + i + ']'"
+            [(ngModel)]="containers[i].madeIn"
+            placeholder="Select MadeIn"
+            (ngModelChange)="changeMadeIn(i, $event)"
+          >
+            <ng-template let-option pTemplate="item">
+              <div (click)="changeMadeIn(i, option)">
+                {{ option.name }}
+              </div>
+            </ng-template>
+          </p-dropdown>
+          <div *ngIf="containers[i].madeIn" class="text-success ps-2">
+            {{ valid }}
+          </div>
+          <div *ngIf="!containers[i].madeIn" class="text-danger ps-2">
+            {{ invalid }}
+          </div>
+        </div>
+        <div
+          class="col"
+          *ngIf="
+            containers[i].brand && containers[i].paper && containers[i].madeIn
+          "
+        >
+          <label class="add-order-label m-0">Dimensions</label>
+          <p-dropdown
+            styleClass="w-100"
+            [options]="containers[i].allDimension"
+            optionLabel="name"
+            [name]="'dimensions[' + i + ']'"
+            [(ngModel)]="containers[i].dimension"
+            placeholder="Select Dimension"
+            [required]="true"
+            (ngModelChange)="changeDimension(i, $event)"
+          >
+            <ng-template let-option pTemplate="item">
+              <div (click)="changeDimension(i, option)">
+                {{ option.name }}
+              </div>
+            </ng-template>
+          </p-dropdown>
+          <div *ngIf="containers[i].dimension" class="text-success ps-2">
+            {{ valid }}
+          </div>
+          <div *ngIf="!containers[i].dimension" class="text-danger ps-2">
+            {{ invalid }}
+          </div>
+        </div>
+      </div>
+      <div class="row py-1 mx-auto">
+        <div
+          class="col"
+          *ngIf="
+            containers[i].brand &&
+            containers[i].paper &&
+            containers[i].madeIn &&
+            containers[i].dimension
+          "
+        >
+          <label class="add-order-label m-0">Vendor</label>
+          <p-dropdown
+            styleClass="w-100"
+            [options]="container.allVendor"
+            optionLabel="name"
+            [required]="true"
+            [name]="'vendor[' + i + ']'"
+            [(ngModel)]="containers[i].vendor"
+            placeholder="Select Vendor"
+            (ngModelChange)="changeVendor(i, $event)"
+          >
+            <ng-template let-option pTemplate="item">
+              <div (click)="changeVendor(i, option)">
+                {{ option.name }}
+              </div>
+            </ng-template>
+          </p-dropdown>
+          <div *ngIf="containers[i].vendor" class="text-success ps-2">
+            {{ valid }}
+          </div>
+          <div *ngIf="!containers[i].vendor" class="text-danger ps-2">
+            {{ invalid }}
+          </div>
+        </div>
+        <div
+          class="col"
+          *ngIf="
+            containers[i].dimension &&
+            containers[i].madeIn &&
+            containers[i].brand &&
+            containers[i].paper &&
+            containers[i].vendor
+          "
+        >
+          <label class="add-order-label m-0">Gsm</label>
+          <p-multiSelect
+            styleClass="w-100"
+            [options]="containers[i].allGsm"
+            optionLabel="name"
+            [(ngModel)]="containers[i].gsm"
+            [required]="true"
+            [name]="'gsm[' + i + ']'"
+            display="chip"
+            (onChange)="toggleEnabledDisabled(i, $event.value)"
+            placeholder="Select Gsm"
+          ></p-multiSelect>
+          <div *ngIf="containers[i].gsm" class="text-success ps-2">
+            {{ valid }}
+          </div>
+          <div *ngIf="!containers[i].gsm" class="text-danger ps-2">
+            {{ invalid }}
+          </div>
+        </div>
+      </div>
+      <div class="row mx-auto d-flex justify-content-end mt-3 pe-2">
+        <button
+          class="btn btn-dark col-1"
+          type="button"
+          [disabled]="!containers[i].gsm"
+          (click)="go(i)"
+        >
+          Go
+        </button>
+      </div>
+      <div class="mb-3 overflow-x-scroll" *ngIf="tableData[i]">
+        <label class="form-label fw-bolder">Result:</label>
+        <table
+          border="2"
+          class="table table-bordered table-striped table-hover text-nowrap"
+          id="goTable"
+        >
+          <thead class="bg-dark text-white">
+            <tr>
+              <th class="text-center">ID</th>
+              <th class="text-center">Paper Stock</th>
+              <th class="text-center">Brand</th>
+              <th class="text-center">Made In</th>
+              <th class="text-center">Dimension</th>
+              <th class="text-center">GSM</th>
+              <th class="text-center">KG</th>
+              <th class="text-center">Length</th>
+              <th class="text-center">Qty</th>
+              <th class="text-center">Rate PKR</th>
+              <th class="text-center">Record Type</th>
+              <th class="text-center">Status</th>
+              <th class="text-center">Timestamp</th>
+              <th class="text-center">Vendor Name</th>
+              <th class="text-center">Contact Name</th>
+              <th class="text-center">Contact Number</th>
+              <th class="text-center">Verified</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of tableData[i]">
+              <td class="text-center">{{ item.id }}</td>
+              <td class="text-center">{{ item.paperStock }}</td>
+              <td class="text-center">{{ item.brand }}</td>
+              <td class="text-center">{{ item.madeIn }}</td>
+              <td class="text-center">{{ item.dimension }}</td>
+              <td class="text-center">{{ item.gsm }}</td>
+              <td class="text-center">{{ item.kg.toFixed(2) }}</td>
+              <td class="text-center">{{ item.length }}</td>
+              <td class="text-center">{{ item.qty }}</td>
+              <td class="text-center">{{ item.ratePkr.toFixed(2) }}</td>
+              <td class="text-center">{{ item.recordType }}</td>
+              <td class="text-center">{{ item.status }}</td>
+              <td class="text-center">{{ item.timeStamp }}</td>
+              <td class="text-center">{{ item.vendor.name }}</td>
+              <td class="text-center">{{ item.vendor.contactName }}</td>
+              <td class="text-center">{{ item.vendor.contactNumber }}</td>
+              <td class="text-center">{{ item.verified }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="container bg-white my-2 py-2">
+      <h4 class="text-decoration-underline">Press</h4>
+      <div class="row mx-auto">
+        <div class="col">
+          <label class="add-order-label m-0">Press</label>
+          <ng-container *ngIf="idFromQueryParam && !press">
+            <label class="text-danger ps-3">You have to select Machine!</label>
+          </ng-container>
+          <p-dropdown
+            styleClass="w-100"
+            [options]="pressMachineArray"
+            [required]="true"
+            optionLabel="name"
+            name="pressMachineArray"
+            (onChange)="getPressMachine($event.value)"
+            [(ngModel)]="press"
+            placeholder="Select Machine"
+          ></p-dropdown>
+          <div *ngIf="press" class="text-success ps-2">
+            {{ valid }}
+          </div>
+          <div *ngIf="!press" class="text-danger ps-2">
+            {{ invalid }}
+          </div>
+        </div>
+        <div class="col" *ngIf="press">
+          <label class="add-order-label m-0">Vendor</label>
+          <p-dropdown
+            styleClass="w-100"
+            [required]="true"
+            [options]="ctpArray"
+            optionLabel="name"
+            name="pressVendor"
+            (onChange)="getMachineAndVendorId($event.value)"
+            [(ngModel)]="pressVendor"
+            placeholder="Select Vendor"
+          ></p-dropdown>
+          <div *ngIf="pressVendor" class="text-success ps-2">
+            {{ valid }}
+          </div>
+          <div *ngIf="!pressVendor" class="text-danger ps-2">
+            {{ invalid }}
+          </div>
+        </div>
+      </div>
+      <div class="row mx-auto mt-3" *ngIf="pressVendor">
+        <div class="col">
+          <label class="add-order-label m-0">Quantities</label>
+          <p-multiSelect
+            styleClass="w-100"
+            [options]="qtyArray?.productFieldValuesList"
+            optionLabel="name"
+            display="chip"
+            name="qtyArray"
+            (onChange)="onQtyChange($event.value)"
+            [required]="true"
+            [(ngModel)]="qty"
+            placeholder="Select MadeIn"
+          ></p-multiSelect>
+          <div *ngIf="qty" class="text-success ps-2">{{ valid }}</div>
+          <div *ngIf="!qty" class="text-danger ps-2">{{ invalid }}</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="container bg-white my-3 py-2" *ngIf="qty && pressVendor">
+      <h4 class="text-decoration-underline">CTP</h4>
+      <div class="row mx-auto">
+        <div class="col">
+          <label class="add-order-label m-0">Plate Dimensions</label>
+          <p-dropdown
+            styleClass="w-100"
+            [options]="dimensionArray"
+            [required]="true"
+            optionLabel="name"
+            (onChange)="getCtp($event.value)"
+            name="dimensionArray"
+            [(ngModel)]="plates"
+            placeholder="Select Plate Size"
+          ></p-dropdown>
+          <div *ngIf="plates" class="text-success ps-2">
+            {{ valid }}
+          </div>
+          <div *ngIf="!plates" class="text-danger ps-2">
+            {{ invalid }}
+          </div>
+        </div>
+        <div class="col" *ngIf="plates">
+          <label class="add-order-label m-0">Vendor</label>
+          <p-dropdown
+            styleClass="w-100"
+            [options]="ctpVendors"
+            [required]="true"
+            optionLabel="vendor.name"
+            name="ctpVendors"
+            [(ngModel)]="plateVendor"
+            placeholder="Select Vendor"
+          ></p-dropdown>
+          <div *ngIf="plateVendor" class="text-success ps-2">
+            {{ valid }}
+          </div>
+          <div *ngIf="!plateVendor" class="text-danger ps-2">
+            {{ invalid }}
+          </div>
+        </div>
+      </div>
+      <div class="row mx-auto mt-3" *ngIf="plateVendor">
+        <div class="col">
+          <label class="add-order-label m-0">PrintSide</label>
+          <p-dropdown
+            styleClass="w-100"
+            [options]="sideOptions?.productFieldValuesList"
+            optionLabel="name"
+            (onChange)="onChangeSide($event.value)"
+            [required]="true"
+            name="sideOptions"
+            [(ngModel)]="sideValue"
+            placeholder="Select Print Side"
+          ></p-dropdown>
+          <div *ngIf="sideValue" class="text-success ps-2">
+            {{ valid }}
+          </div>
+          <div *ngIf="!sideValue" class="text-danger ps-2">
+            {{ invalid }}
+          </div>
+        </div>
+        <div class="col" *ngIf="sideValue">
+          <label class="add-order-label m-0">Job Color Front</label>
+          <p-multiSelect
+            styleClass="w-100"
+            [options]="frontColors?.productFieldValuesList"
+            optionLabel="name"
+            [required]="true"
+            [(ngModel)]="jobFront"
+            name="frontColors"
+            display="chip"
+            (onChange)="onFrontColorChange($event.value)"
+            placeholder="Select Front Colors"
+          ></p-multiSelect>
+          <div *ngIf="jobFront" class="text-success ps-2">
+            {{ valid }}
+          </div>
+          <div *ngIf="!jobFront" class="text-danger ps-2">
+            {{ invalid }}
+          </div>
+        </div>
+      </div>
+      <div class="row mx-auto mt-3">
+        <div class="col" *ngIf="backNotApplied">
+          <label class="add-order-label m-0">Job Color Back</label>
+          <p-multiSelect
+            styleClass="w-100"
+            [options]="backColors?.productFieldValuesList"
+            optionLabel="name"
+            [required]="true"
+            [(ngModel)]="jobBack"
+            display="chip"
+            (onChange)="onBackColorChange($event.value)"
+            placeholder="Select Back Colors"
+            name="backColors"
+          ></p-multiSelect>
+          <div *ngIf="jobBack" class="text-success ps-2">
+            {{ valid }}
+          </div>
+          <div *ngIf="!jobBack" class="text-danger ps-2">
+            {{ invalid }}
+          </div>
+        </div>
+        <div class="col position-relative" *ngIf="imposition">
+          <div
+            class="form-check form-switch form-switch-lg position-absolute bottom-0 end-0"
+          >
+            <label class="add-order-label position-absolute bottom-100 end-0"
+              >Imposition</label
+            >
+            <input
+              class="form-check-input"
+              type="checkbox"
+              id="flexSwitchCheckChecked"
+              name="impositionValueChecked"
+              checked
+              [(ngModel)]="impositionValue"
+              (change)="onCheck(impositionValue)"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="container">
+      <div class="row mx-auto d-flex justify-content-end">
+        <button
+          class="btn btn-dark col-1"
+          type="button"
+          (click)="addProductRule()"
+          [disabled]="!myForm.valid || result === true"
+        >
+          {{ buttonName }}
+        </button>
+      </div>
+    </div>
+  </div>
+</form>
+<p-toast></p-toast>

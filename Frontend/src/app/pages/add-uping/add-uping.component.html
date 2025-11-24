@@ -1,0 +1,175 @@
+<app-sidebar></app-sidebar>
+<div class="body-position">
+  <app-dashboard-head></app-dashboard-head>
+
+  <div class="main-container">
+    <div>
+      <h4>{{ buttonName }} Uping</h4>
+    </div>
+    <div class="order-body py-2">
+      <div class="container">
+        <div class="row">
+          <div class="col-12 my-3">
+            <label class="add-order-label d-inline-block m-0 mb-1"
+              >Paper Size Category</label
+            >
+            <br />
+            <p-dropdown
+              [options]="categoryArray?.productFieldValuesList"
+              styleClass="w-100"
+              optionLabel="name"
+              [placeholder]="'Category'"
+              [(ngModel)]="category"
+              name="category"
+            >
+            </p-dropdown>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-6 my-3">
+            <label class="add-order-label m-0">Product Size Name</label>
+            <input
+              type="text"
+              class="order-search form-control order-form-input m-0"
+              [(ngModel)]="productSizeValue"
+              style="border: 1px solid #ced4da"
+              placeholder="Enter Product Size"
+              name="productSizeValue"
+              required
+            />
+          </div>
+          <div class="col-6 my-3">
+            <label class="add-order-label m-0">L1</label>
+            <input
+              type="text"
+              class="order-search form-control order-form-input m-0"
+              [(ngModel)]="l1"
+              style="border: 1px solid #ced4da"
+              placeholder="Enter L1"
+              name="l1"
+              required
+            />
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-6 my-3">
+            <label class="add-order-label m-0">L2</label>
+            <input
+              type="text"
+              class="order-search form-control order-form-input m-0"
+              [(ngModel)]="l2"
+              style="border: 1px solid #ced4da"
+              placeholder="Enter L2"
+              name="l2"
+              required
+            />
+          </div>
+          <div class="col-6 my-3">
+            <label class="add-order-label d-inline-block m-0 mb-1">Unit</label>
+            <br />
+            <p-dropdown
+              [options]="unitArray?.productFieldValuesList"
+              styleClass="w-100"
+              optionLabel="name"
+              [(ngModel)]="unit"
+              (onChange)="onUnitChange($event.value)"
+              [placeholder]="'Unit'"
+              name="unit"
+            >
+            </p-dropdown>
+          </div>
+        </div>
+        <div class="row" *ngIf="unit">
+          <div class="col">
+            <label class="add-order-label d-inline-block m-0 mb-1">MM</label>
+            <br />
+            <label class="d-inline-block m-0 mb-1">{{
+              unitLabelInch + " x " + unitLabelInch2 + " mm"
+            }}</label>
+          </div>
+          <div class="col">
+            <label class="add-order-label d-inline-block m-0 mb-1">Inch</label>
+            <br />
+            <label class="d-inline-block m-0 mb-1">{{
+              unitLabelMm + " x " + unitLabelMm2 + " in"
+            }}</label>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="main-container">
+    <div class="d-flex justify-content-between">
+      <h4>Uping Size</h4>
+      <button
+        type="submit"
+        class="btn order-table-btn btn-search-panel py-2 px-3"
+        (click)="generateElement()"
+      >
+        <i class="fa-solid fa-plus"></i>
+      </button>
+    </div>
+
+    <div
+      class="order-body py-2 my-2"
+      *ngFor="let element of paperSize; let i = index"
+    >
+      <div class="container">
+        <div class="row">
+          <div class="col-5">
+            <label class="add-order-label d-inline-block m-0 mb-1">Label</label
+            ><br />
+            <p-dropdown
+              [options]="paperSizesArray"
+              styleClass="w-100"
+              optionLabel="label"
+              (ngModelChange)="addSize($event, i)"
+              [(ngModel)]="selectedSizes[i]"
+              [placeholder]="
+                buttonName == 'Add' ? 'Select Label' : placeHolder[i]
+              "
+              name="paperSize"
+            >
+            </p-dropdown>
+          </div>
+          <div class="col-5">
+            <label class="add-order-label d-inline-block m-0">Value</label
+            ><br />
+            <input
+              type="number"
+              class="order-search form-control order-form-input m-0"
+              [(ngModel)]="value[i]"
+              style="border: 1px solid #ced4da"
+              placeholder="Enter Value"
+              name="value"
+              required
+            />
+          </div>
+          <div class="col-1 align-self-lg-end">
+            <button
+              type="submit"
+              class="btn order-table-btn btn-search-panel"
+              (click)="removeElement(i)"
+            >
+              <i class="fa-solid fa-trash"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="order-body mt-5 py-3">
+      <div class="text-end">
+        <button
+          type="submit"
+          class="btn order-table-btn btn-search-panel"
+          (click)="addUping()"
+        >
+          {{ buttonName }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<p-toast>{{ error }}</p-toast>
