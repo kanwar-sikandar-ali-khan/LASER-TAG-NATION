@@ -47,7 +47,7 @@ public class SwaggerConfig {
     private ApiInfo apiInfoMetaData() {
         return new ApiInfoBuilder().title("lasertagnation")
                 .description("lasertagnation Api Documentation")
-                .contact(new Contact("StepWay", "https://www.stepwaysoftwares.com", "stepway@gmail.com"))
+                .contact(new Contact("Imperial", "https://www.imperialsoftwares.com", "imperial@gmail.com"))
                 .license("License of Apis")
                 .licenseUrl("http://www.apache.org/licenses/LICENSE-2.0.html")
                 .version("1.0")

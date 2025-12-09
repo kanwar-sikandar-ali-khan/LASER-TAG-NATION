@@ -33,11 +33,11 @@ public class SecurityConfigure extends WebSecurityConfigurerAdapter {
             "/swagger-resources/**",
             "/swagger-ui/**",
             "/webjars/**",
-            "https://api.printlab.stepwaysoftwares.com/public_html/design/**"
+            "https://api.lasser.imperialsoftwares.com/public_html/design/**"
     };
 
     @Autowired
-    private MyUserDetailServiceImplementation myUserDetailsService;
+    private MyUserDetailServiceIm   plementation myUserDetailsService;
     @Autowired
     private JwtRequestFilter jwtRequestFilter;
 
