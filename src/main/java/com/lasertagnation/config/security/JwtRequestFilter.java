@@ -25,6 +25,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     @Autowired
     private MyUserDetailServiceImplementation myUserDetailServiceImplementation;
 
+    ///  this will run on each api request
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
@@ -35,19 +36,40 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             String jwt = null;
 
             if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+                // store token in variable
                 jwt = authorizationHeader.substring(7);
 
-
+                // store username in variable
                 username = jwtUtil.extractUsername(jwt);
 
 
+                // SecurityContextHolder.getContext().getAuthentication() == null
+                             //Prevents re-authentication
+//                ✔ Important for performance
                 if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                    //it has my data customUserDetail
                     CustomUserDetail customUserDetail = myUserDetailServiceImplementation.loadUserByUsername(username);
+//                    System.out.println("customUserDetail.getAuthorities=>: " + customUserDetail);
+//                    output
+//                    ["ROLE_ADMIN", "Dashboard", "Orders", "Customers"]
+//
                     if (jwtUtil.validateToken(jwt, customUserDetail)) {
-                        UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(customUserDetail, null, customUserDetail.getAuthorities());
-                        //error here
+                            UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(customUserDetail, null, customUserDetail.getAuthorities());
+                            //error here
+
+                        //i add it to You will see exactly what Spring is checking
+//                        Add this temporarily in controller:
+//                        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+//                        System.out.println(auth.getAuthorities());
+
+
+
                         usernamePasswordAuthenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                        SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
+
+//                        User is authenticated
+//                        Spring Security knows user roles
+//                        Spring Security knows permissions
+                            SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
                     }
                 }
             }

@@ -35,7 +35,7 @@ public class SecurityConfigure extends WebSecurityConfigurerAdapter {
             "/webjars/**",
             "https://api.lasser.imperialsoftwares.com/public_html/design/**"
     };
-
+//// ?????
     @Autowired
     private MyUserDetailServiceImplementation myUserDetailsService;
     @Autowired
@@ -45,6 +45,8 @@ public class SecurityConfigure extends WebSecurityConfigurerAdapter {
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.userDetailsService(myUserDetailsService);
     }
+
+    /// like websecurityConfig for authorization
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -58,6 +60,8 @@ public class SecurityConfigure extends WebSecurityConfigurerAdapter {
 
         http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
     }
+
+    /// like app config Beans
 
     @Override
     @Bean

@@ -20,6 +20,9 @@ public interface UserRepository extends JpaRepository<User, Long> {
     void setStatusInactive(@Param("id") Long id);
 
     List<User> findAllByStatusIsTrue();
+    List<User> findByNameStartingWith(String name);
+    List<User> findByIdIn(List<Long> ids);
+
 
     User findByEmailAndStatusIsTrue(String email);
 

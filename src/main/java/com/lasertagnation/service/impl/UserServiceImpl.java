@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -51,10 +52,24 @@ public class UserServiceImpl implements UserService {
         List<User> userList = userRepository.findAllByStatusIsTrue();
         List<UserDto> userDtoList = new ArrayList<>();
 
+
+
         for (User user : userList) {
             UserDto userDto = toDto(user);
+//            System.out.println("userDtoSingle=>: " + userDto);
+
             userDtoList.add(userDto);
         }
+
+        List<Long> givenIds = Arrays.asList(5L);
+        List<User> usersgivenIds = userRepository.findByIdIn(givenIds);
+
+//
+        System.out.println("usersgivenIds"+usersgivenIds);
+
+
+
+//        System.out.println("getAll ,    userDtoList=>: " + userDtoList);
         return userDtoList;
     }
 

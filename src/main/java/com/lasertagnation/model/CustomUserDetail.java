@@ -1,5 +1,6 @@
 package com.lasertagnation.model;
 
+import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -7,7 +8,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-
+@Data
 public class CustomUserDetail implements UserDetails {
 
     private User user;
@@ -23,6 +24,7 @@ public class CustomUserDetail implements UserDetails {
         // Add roles with the "ROLE_" prefix
         this.user.getRoles().forEach(role -> {
             authorityList.add(new SimpleGrantedAuthority(role.getName()));
+            System.out.println("CustomUserDetail class=>: " + role);
 
             // Add permissions without the prefix
             role.getPermissions().forEach(permission -> {
