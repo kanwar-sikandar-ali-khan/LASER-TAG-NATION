@@ -1,0 +1,216 @@
+You are working inside an EXISTING Spring Boot project.
+
+FIRST STEP:
+
+* Analyze the existing project structure
+* Understand current packages, architecture, and existing User entity
+* DO NOT modify or delete existing modules
+* ONLY ADD a new module called YachtModule
+
+---
+
+# MODULE: YachtModule (INTENTIONALLY BAD DESIGN FOR LEARNING)
+
+Goal:
+This module is intentionally poorly designed to learn Hibernate/JPA problems deeply.
+
+---
+
+# ENTITIES (DO NOT recreate User)
+
+Create only:
+
+1. Yacht
+2. Booking
+3. Food
+
+Use existing User entity from project.
+
+---
+
+# RELATIONSHIPS (INTENTIONALLY PROBLEMATIC)
+
+## 1. OneToOne (User -> Yacht)
+
+* yacht_id in users table
+* FetchType.LAZY
+* NO optimization
+
+```java
+@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+@JoinColumn(name = "yacht_id")
+```
+
+⚠ Purpose:
+
+* cascade ALL here is intentionally risky
+* learn unintended persistence propagation issues
+
+---
+
+## 2. ManyToOne (Booking -> User)
+
+* user_id in bookings table
+* FetchType.LAZY
+* cascade = CascadeType.ALL (INTENTIONALLY WRONG USAGE)
+
+```java
+@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+@JoinColumn(name = "user_id")
+```
+
+⚠ Purpose:
+
+* demonstrate dangerous cascade on ManyToOne
+* accidental user updates/deletes via booking
+
+---
+
+## 3. OneToMany (User -> Bookings)
+
+* bidirectional mapping
+* FetchType.LAZY
+* cascade = CascadeType.ALL
+* orphanRemoval = false (INTENTIONALLY BAD)
+
+```java
+@OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+private List<Booking> bookings;
+```
+
+⚠ Purpose:
+
+* cascading deletes/updates unintentionally
+* orphan cleanup NOT handled properly
+
+---
+
+## 4. ManyToMany (Yacht <-> Food)
+
+* join table yacht_food
+* FetchType.LAZY
+* cascade = CascadeType.ALL (INTENTIONALLY DANGEROUS)
+
+```java
+@ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+@JoinTable(
+    name = "yacht_food",
+    joinColumns = @JoinColumn(name = "yacht_id"),
+    inverseJoinColumns = @JoinColumn(name = "food_id")
+)
+```
+
+⚠ Purpose:
+
+* accidental creation/deletion of Food entities
+* duplication and persistence confusion
+
+---
+
+# INTENTIONALLY INCLUDE PROBLEMS
+
+This module MUST demonstrate real Hibernate issues:
+
+* N+1 query problems
+* LazyInitializationException
+* infinite JSON recursion
+* Hibernate proxy serialization issues
+* duplicate SQL queries
+* pagination inefficiency
+* cascade side effects (VERY IMPORTANT)
+* unexpected delete/update propagation
+* returning entities directly from controllers
+
+---
+
+# REQUIRED STRUCTURE
+
+Create:
+
+* Entities
+* Repositories
+* Services
+* Controllers
+
+---
+
+# API REQUIREMENTS
+
+Add endpoints:
+
+* CRUD for all entities
+* Get all users
+* Get all bookings
+* Get all yachts
+* Get yacht foods
+* Get user bookings
+* Pagination endpoints using Pageable
+
+---
+
+# PAGINATION (INTENTIONALLY BAD)
+
+Implement pagination incorrectly:
+
+* Page<User> with relationships loaded
+* Pageable used without optimization
+* triggers extra queries per row
+* no DTO pagination
+
+---
+
+# SEED DATA
+
+Use CommandLineRunner:
+
+* create sample users
+* yachts
+* bookings
+* foods
+
+---
+
+# LOGGING CONFIG
+
+Enable SQL logs:
+
+spring.jpa.show-sql=true
+spring.jpa.properties.hibernate.format_sql=true
+logging.level.org.hibernate.SQL=DEBUG
+logging.level.org.hibernate.orm.jdbc.bind=TRACE
+
+---
+
+# STRICT RULES
+
+DO NOT:
+
+* use JOIN FETCH
+* use EntityGraph
+* optimize queries
+* fix N+1 issues
+* fix cascade issues
+* convert everything to DTO architecture
+
+---
+
+# DOCUMENTATION INSIDE CODE
+
+Add comments explaining:
+
+* where N+1 occurs
+* where LazyInitializationException happens
+* where cascade causes unintended side effects
+* where JSON recursion happens
+* where pagination becomes inefficient
+* where extra SQL queries are triggered
+
+---
+
+# OUTPUT RULE
+
+Only modify/add within existing project structure.
+
+Do NOT rebuild project.
+
+This module is for EDUCATIONAL DEBUGGING of Hibernate behavior.

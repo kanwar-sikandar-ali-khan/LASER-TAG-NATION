@@ -90,12 +90,12 @@ INSERT INTO role_permissions VALUES
                                  (1,16),(1,17),(1,18),(1,19),(1,20),(1,21);
 
 -- =========================
--- USERS
+-- USERS (explicit columns: yacht_id added by YachtModule / Hibernate mapping)
 -- =========================
-INSERT INTO users VALUES
-    (1,"123456","2023-10-31 16:58:23.537000","admin@gmail.com","Admin",
-     "$2a$10$nWT6vXsQcnwjQJtOqJP/9.q.1YxTNTaaarYuf4i.eTvlBj.nhrGiu",
-     "0335331855",_binary '');
+INSERT INTO users (id, cnic, created_at, email, name, password, phone, status, yacht_id) VALUES
+    (1,'123456','2023-10-31 16:58:23.537000','admin@gmail.com','Admin',
+     '$2a$10$nWT6vXsQcnwjQJtOqJP/9.q.1YxTNTaaarYuf4i.eTvlBj.nhrGiu',
+     '0335331855',_binary '',NULL);
 
 -- =========================
 -- USER ROLES
