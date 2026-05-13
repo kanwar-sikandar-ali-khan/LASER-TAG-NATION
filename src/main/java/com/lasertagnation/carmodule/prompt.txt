@@ -1,0 +1,228 @@
+You are working inside an EXISTING Spring Boot project.
+
+FIRST STEP:
+
+* Analyze the entire project structure
+* Understand existing architecture, packages, and User entity
+* DO NOT modify or delete any existing code
+* ONLY ADD a new module called CarModule
+
+---
+
+# ⚠️ IMPORTANT SAFETY RULE (VERY IMPORTANT)
+
+Before making ANY change:
+
+* ALWAYS show proposed changes first
+* ALWAYS wait for user approval
+* DO NOT auto-apply changes
+* DO NOT modify multiple files without confirmation
+* Use diff-style or step-by-step changes
+
+Ask:
+👉 “Do you want me to apply these changes?”
+
+Proceed ONLY after approval.
+
+---
+
+# MODULE: CarModule (PRODUCTION-READY JPA DESIGN)
+
+Goal:
+Build a clean, optimized, production-grade Spring Boot module demonstrating correct Hibernate usage, pagination handling, and architecture best practices.
+
+---
+
+# ENTITIES (Use existing User entity)
+
+Create only:
+
+1. Car
+2. Booking
+3. Food
+
+---
+
+# RELATIONSHIPS (OPTIMIZED DESIGN)
+
+## 1. OneToOne (User -> Car)
+
+* car_id in users table
+* FetchType.LAZY
+* cascade = CascadeType.ALL
+
+```java
+@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+@JoinColumn(name = "car_id")
+private Car car;
+```
+
+---
+
+## 2. ManyToOne (Booking -> User)
+
+* user_id in bookings table
+* FetchType.LAZY
+* NO CascadeType.ALL
+
+Explain in comments why cascade is dangerous here.
+
+---
+
+## 3. OneToMany (User -> Bookings)
+
+* bidirectional mapping
+* FetchType.LAZY
+* cascade = CascadeType.ALL
+* orphanRemoval = true
+
+Explain:
+
+* orphan removal behavior
+* delete propagation
+* persistence lifecycle
+
+---
+
+## 4. ManyToMany (Car <-> Food)
+
+* car_food join table
+* FetchType.LAZY
+* NO CascadeType.ALL
+
+Explain why cascade is dangerous in ManyToMany.
+
+---
+
+# ARCHITECTURE REQUIREMENTS
+
+Must include:
+
+* DTO layer (mandatory)
+* Mapper layer
+* Service layer
+* Repository layer
+* Controller layer
+* Global exception handling
+* Validation annotations
+
+DO NOT expose entities directly in API responses.
+
+---
+
+# N+1 OPTIMIZATION STRATEGIES
+
+Implement and demonstrate:
+
+## 1. JOIN FETCH
+
+## 2. EntityGraph
+
+## 3. DTO Projections
+
+## 4. Batch Fetching
+
+Add comments explaining performance impact.
+
+---
+
+# PAGINATION (CRITICAL SECTION)
+
+Implement correct pagination strategy.
+
+## MUST DEMONSTRATE:
+
+### BAD CASE (documented only)
+
+Explain why this is wrong:
+
+* JOIN FETCH + Pageable on collections
+* duplicate rows
+* incorrect pagination results
+
+---
+
+### GOOD CASES (IMPLEMENTED)
+
+## 1. DTO Pagination (preferred)
+
+## 2. Two-Step Pagination Strategy:
+
+Step 1: fetch IDs with pagination
+Step 2: fetch relations using IN clause
+
+## 3. EntityGraph (limited use cases)
+
+---
+
+# SEED DATA
+
+Use CommandLineRunner:
+
+* create users
+* cars
+* bookings
+* foods
+
+Ensure enough data for:
+
+* pagination testing
+* join fetch testing
+* batch fetch testing
+
+---
+
+# LOGGING CONFIG
+
+Enable:
+
+spring.jpa.show-sql=true
+spring.jpa.properties.hibernate.format_sql=true
+logging.level.org.hibernate.SQL=DEBUG
+logging.level.org.hibernate.orm.jdbc.bind=TRACE
+
+---
+
+# SERIALIZATION SAFETY
+
+Prevent:
+
+* infinite recursion
+* lazy proxy serialization issues
+
+Use DTOs only.
+
+---
+
+# TRANSACTION MANAGEMENT
+
+Use @Transactional correctly and explain:
+
+* lazy loading inside transactions
+* session boundaries
+
+---
+
+# OUTPUT RULES
+
+Before applying any change:
+
+* show diff
+* explain what will change
+* ask for approval
+
+After approval:
+
+* apply changes step-by-step
+* do NOT modify unrelated files
+
+---
+
+# FINAL GOAL
+
+This module should represent a production-grade Spring Boot JPA system with:
+
+* correct pagination handling
+* optimized queries
+* clean architecture
+* safe modification workflow

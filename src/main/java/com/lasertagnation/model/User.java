@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
+import com.lasertagnation.carmodule.entity.Car;
 import com.lasertagnation.yachtmodule.entity.Booking;
 import com.lasertagnation.yachtmodule.entity.Yacht;
 
@@ -60,6 +61,15 @@ public class User {
     private Yacht yacht;
 
     /**
+     * CarModule: FK {@code car_id} lives on {@code users}. {@code LAZY} avoids loading {@link Car} on every user read;
+     * {@code CascadeType.ALL} persists/updates/deletes the linked {@link Car} together with this user when the
+     * persistence provider flushes the aggregate (typical for a strict 1:1 owned composition).
+     */
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "car_id")
+    private Car car;
+
+    /**
      * Bidirectional with {@link Booking#user}. {@code CascadeType.ALL} on the collection is dangerous: operations on one
      * booking can cascade lifecycle events across siblings sharing the same user graph.
      * <p>
@@ -71,5 +81,21 @@ public class User {
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @Builder.Default
     private List<Booking> bookings = new ArrayList<>();
+
+    /**
+     * CarModule bookings (table {@code car_bookings}) — type uses FQCN to avoid clashing with {@link Booking} (YachtModule).
+     * <p>
+     * {@code orphanRemoval = true}: removing an element from this collection and flushing deletes the row; the child
+     * becomes an orphan when no longer referenced from the parent side.
+     * <p>
+     * {@code CascadeType.ALL}: persist/merge/remove operations propagate to each element in the collection (delete
+     * propagation: clearing the collection with orphanRemoval deletes children; explicit {@code remove} does too after flush).
+     * <p>
+     * Persistence lifecycle: within a {@code @Transactional} boundary, Hibernate tracks this collection as part of the
+     * same persistence context as {@code User}; lazy elements initialize on access while the session is open.
+     */
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    private List<com.lasertagnation.carmodule.entity.Booking> carBookings = new ArrayList<>();
 }
 

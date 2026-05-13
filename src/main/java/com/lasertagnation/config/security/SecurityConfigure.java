@@ -24,6 +24,7 @@ public class SecurityConfigure extends WebSecurityConfigurerAdapter {
 
     public static final String[] PUBLIC_URLS = {
             "/api/login",
+            "/api/carmodule/**",
             "/api/image/*.jpg",
             "/api/image/*.png",
             "/api/image/*.jpeg",
