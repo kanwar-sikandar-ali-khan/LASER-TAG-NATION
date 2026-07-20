@@ -1,6 +1,6 @@
 Libraries:
 
-io.jsonwebtoken=>claim,Jwts,SignatureAlgorithm
+import io.jsonwebtoken=>claim,Jwts,SignatureAlgorithm
 
 import org.springframework.web.filter=>OncePerRequestFilter;
 
