@@ -58,25 +58,37 @@ public class YachtModuleSeedRunner implements CommandLineRunner {
             return;
         }
 
+        //// 1st Phase
+//food create
         Food fish = foodRepository.save(Food.builder().name("Grilled fish").category("Main").build());
         Food salad = foodRepository.save(Food.builder().name("House salad").category("Starter").build());
         Food dessert = foodRepository.save(Food.builder().name("Lemon tart").category("Dessert").build());
 
+// yacht create
         Yacht alpha = yachtRepository.save(Yacht.builder().name("Yacht Alpha (lab)").build());
+        //use in second phase
         Yacht beta = yachtRepository.save(Yacht.builder().name("Yacht Beta (lab)").build());
 
+//add Above foods in alpha yacht
         alpha.getFoods().add(fish);
         alpha.getFoods().add(salad);
         alpha.getFoods().add(dessert);
         yachtRepository.save(alpha);
 
+//  assosiate Above alpha yacht to user
         User admin = userRepository.findById(1L).orElseThrow(
                 () -> new IllegalStateException("YachtModule seed expects admin user id=1 from data.sql"));
         admin.setYacht(alpha);
+        //? this line
+//         Jo tumne padha — haan, inverse side setUser tab useful hai jab usi flow mein yacht.getUser() use karna ho.
+// Lekin uske baad wala yachtRepository.save(...) us rule ka hissa nahi — woh redundant hai.
+
         alpha.setUser(admin);
         userRepository.save(admin);
+        //? this line= redundant hai
         yachtRepository.save(alpha);
 
+//    create booking and associate above user
         bookingRepository.save(
                 Booking.builder()
                         .user(admin)
@@ -85,6 +97,15 @@ public class YachtModuleSeedRunner implements CommandLineRunner {
                         .endDate(LocalDate.now().plusDays(1))
                         .build());
 
+
+
+
+
+
+
+                   //// 2nd Phase
+
+//        create new user
         Role userRole = roleRepository.findById(2L).orElseThrow(
                 () -> new IllegalStateException("YachtModule seed expects ROLE_USER id=2 from data.sql"));
         User crew = User.builder()
@@ -97,10 +118,18 @@ public class YachtModuleSeedRunner implements CommandLineRunner {
                 .roles(new HashSet<>(Collections.singletonList(userRole)))
                 .build();
         userRepository.save(crew);
+
+//        associate yacht to user
         crew.setYacht(beta);
+        //? this line
+//         Jo tumne padha — haan, inverse side setUser tab useful hai jab usi flow mein yacht.getUser() use karna ho.
+// Lekin uske baad wala yachtRepository.save(...) us rule ka hissa nahi — woh redundant hai.
         beta.setUser(crew);
         userRepository.save(crew);
+        //? this line= redundant hai
         yachtRepository.save(beta);
+
+        //    create booking and associate above user
 
         bookingRepository.save(
                 Booking.builder()
@@ -111,3 +140,15 @@ public class YachtModuleSeedRunner implements CommandLineRunner {
                         .build());
     }
 }
+
+
+// Question:
+// abhi mene user k andr yachtid save rakh kr 1to1
+//  relation bnaya hua ye kaam bhi aise bhi to krskta tha
+//   k yacht k andr user id save krta or yebhi 1to1 relation
+//    hota konc approch standard h?
+
+// Short answer
+// Dono 1:1 hain.
+// Standard preference: FK us table pe jahan relation “belong” karti ho (aksar child: Yacht → user_id).
+// Decide is se: kaun pehle exist kare, kaun optional ho, kaun delete pe cascade le.
